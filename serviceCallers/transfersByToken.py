@@ -20,14 +20,12 @@ def getTransfersByToken(blockTimestampGt, contractAddress, tokenId,
         'offset': 0,
         'sortDirection': sortDirection,
         'blockTimestampGt': blockTimestampGt,
-        'contractAddress': contractAddress,
-        'tokenId': tokenId,
         'transferTypes': transferTypes,
     }
 
 
     req = PreparedRequest()
-    url = BASE_URL + '/events/v1beta1/transfers/'
+    url = BASE_URL + '/events/v1beta1/transfers/' + contractAddress + "/" + tokenId
 
     transfers = []
 
@@ -35,7 +33,10 @@ def getTransfersByToken(blockTimestampGt, contractAddress, tokenId,
         req.prepare_url(url, params)
         resp = requests.get(req.url, headers=headers)
         transfers += (resp.json())["transfers"]
+        print("Batch of transfers is received. Total number of transfers received is {}.".format(len(transfers)))
         if len((resp.json())["transfers"]) < limit:
+            print(
+                "Last batch of transfers is received. Total number of transfers received is {}.".format(len(transfers)))
             break
         else:
             params['offset'] += limit

@@ -15,5 +15,6 @@ def getTokenMetadata(contractAddress, tokenId):
 
     resp = requests.get(url, headers=headers)
     metadata = (resp.json())
+    print("Metadata for the token {} is received.".format(tokenId))
 
     return metadata

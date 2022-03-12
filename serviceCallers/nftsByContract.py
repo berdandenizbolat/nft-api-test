@@ -31,7 +31,9 @@ def getNFTsByContract(blockTimestampGt, contractAddress, limit = 500, sortDirect
         req.prepare_url(url, params)
         resp = requests.get(req.url, headers=headers)
         contracts += (resp.json())["tokens"]
+        print("Batch of tokens is received. Total number of tokens received is {}.".format(len(contracts)))
         if len((resp.json())["tokens"]) < limit:
+            print("Last batch of tokens is received. Total number of tokens received is {}.".format(len(contracts)))
             break
         else:
             params['offset'] += limit

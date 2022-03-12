@@ -1,4 +1,5 @@
 from serviceCallers.tokenMetadata import getTokenMetadata
+import json
 
 
 class TraitValue:
@@ -18,10 +19,10 @@ class TraitType:
         index = 0
         while not valueFound:
             if index == len(self.traitValues):
-                self.traitValues.append(TraitValue(value))
+                self.traitValues.append(TraitValue(self.name, value))
                 self.totalOccurrence += 1
                 break
-            if self.traitValues[index].name == value:
+            if self.traitValues[index].value == value:
                 self.traitValues[index].occurrence += 1
                 self.totalOccurrence += 1
                 valueFound = True
@@ -55,7 +56,7 @@ class TraitTypeList:
                 if elem["trait_type"] == attr.name:
                     dividend = attr.totalOccurrence
                     for value in attr.traitValues:
-                        if elem["value"] == value.name:
+                        if elem["value"] == value.value:
                             divisor = value.occurrence
                             break
             rarityScore += dividend/divisor
@@ -101,3 +102,23 @@ def rarityCalculationForOneNft(nftList, nftSearch):
             traitList.checkIfTraitTypeExists(newAttr["trait_type"], newAttr["value"])
 
     return traitList.calculateRarity(nftMetadata)
+
+def rarityCalculationWithMetadata(nftDetails):
+    traitList = TraitTypeList()
+
+    for nft in nftDetails:
+        try:
+            attr = json.loads(nft['metadata']['metadata']['raw'])["attributes"]
+            for newAttr in attr:
+                traitList.checkIfTraitTypeExists(newAttr["trait_type"], newAttr["value"])
+            nft['rarityScore'] = True
+
+        except:
+            nft['rarityScore'] = False
+            print("Failed to parse attributes from nft with id {}".format(nft['tokenDetails']['tokenId']))
+
+    for nft in nftDetails:
+        if nft['rarityScore']:
+            nft['rarityScore'] = traitList.calculateRarity(json.loads(nft['metadata']['metadata']['raw'])["attributes"])
+
+    return nftDetails

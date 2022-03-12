@@ -31,9 +31,11 @@ def getAllContracts(blockTimestampGt, limit = 500, sortDirection = "SORT_DIRECTI
         req.prepare_url(url, params)
         resp = requests.get(req.url, headers=headers)
         contracts += (resp.json())["contracts"]
-        if len((resp.json())["contracts"])<limit:
+        print("Batch of contracts is received. Total number of contracts received is {}.".format(len(contracts)))
+        if len((resp.json())["contracts"]) < limit:
+            print("Last batch of contracts is received. Total number of contracts received is {}.".format(len(contracts)))
             break
         else:
-            params['offset']+=limit
+            params['offset'] += limit
 
     return contracts

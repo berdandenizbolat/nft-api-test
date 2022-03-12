@@ -34,9 +34,12 @@ def getTransfersByContract(blockTimestampGt, contractAddress, limit = 500,
         req.prepare_url(url, params)
         resp = requests.get(req.url, headers=headers)
         transfers += (resp.json())["transfers"]
-        if len((resp.json())["transfers"])<limit:
+        print("Batch of transfers is received. Total number of transfers received is {}.".format(len(transfers)))
+        if len((resp.json())["transfers"]) < limit:
+            print(
+                "Last batch of transfers is received. Total number of transfers received is {}.".format(len(transfers)))
             break
         else:
-            params['offset']+=limit
+            params['offset'] += limit
 
     return transfers
